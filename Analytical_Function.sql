@@ -1,0 +1,153 @@
+--find all employees with name and location 
+
+create table dept(DEPTNO NUMBER(3) primary key,DEPTNAME VARCHAR2(25), DEPTLOC VARCHAR2(25));
+
+INSERT into dept VALUES(10,'SALES','BHOPAL');
+
+INSERT into dept VALUES(20,'HR','INDORE');
+
+INSERT into dept VALUES(30,'FINANCE','PUNE');
+
+INSERT into dept VALUES(40,'MKT','MUMBAI');
+
+SELECT * FROM dept;
+
+CREATE TABLE emp(EMPNO NUMBER(3) PRIMARY KEY,EMPNAME VARCHAR2(30),DEPTNO NUMBER(3));
+
+ALTER TABLE emp ADD FOREIGN KEY(DEPTNO) REFERENCES dept(DEPTNO);
+
+INSERT into emp VALUES(100,'SKS',10);
+
+INSERT into emp VALUES(101,'SK',20);
+
+INSERT into emp VALUES(102,'SKV',30);
+
+INSERT into emp VALUES(103,'SJ',40);
+
+INSERT into emp VALUES(104,'PKS',20);
+
+SELECT * FROM emp;
+
+INSERT INTO emp VALUES(105,"Ali",50);--error
+
+SELECT empname,deptname,deptloc 
+from emp
+INNER JOIN dept 
+on emp.deptno=dept.deptno;
+
+COMMIT;
+
+SELECT * FROM dept; --parent
+
+SELECT * FROM emp; --parent
+
+DELETE FROM emp WHERE empno=104; --it is posible
+
+DELETE FROM dept WHERE empno=40; --not posible
+
+--on delete casecade
+--first creat dept1 table
+
+create table dept1(DEPTNO NUMBER(3) primary key,DEPTNAME VARCHAR2(25), DEPTLOC VARCHAR2(25));
+
+INSERT into dept1 VALUES(10,'SALES','BHOPAL');
+
+INSERT into dept1 VALUES(20,'HR','INDORE');
+
+INSERT into dept1 VALUES(30,'FINANCE','PUNE');
+
+INSERT into dept1 VALUES(40,'MKT','MUMBAI');
+
+SELECT * FROM dept1;
+
+DROP TABLE emp1;
+
+CREATE TABLE emp1(EMPNO NUMBER(3) PRIMARY KEY,EMPNAME VARCHAR2(30),DEPTNO NUMBER(3),
+FOREIGN KEY(DEPTNO) REFERENCES dept(DEPTNO) on DELETE CASCADE);
+
+INSERT into emp1 VALUES(100,'SKS',10);
+
+INSERT into emp1 VALUES(101,'SK',20);
+
+INSERT into emp1 VALUES(102,'SKV',30);
+
+INSERT into emp1 VALUES(103,'SJ',40);
+
+SELECT * FROM emp1;
+
+DELETE FROM dept where deptno=40;
+
+-----------------------------------------------------------------------------------------
+
+--dense_rank it provides squential rank
+
+SELECT * FROM employees;
+
+--find employees with lowest salary
+
+select min(SALARY) from employees;
+
+select EMPLOYEE_ID,FIRST_NAME,JOB_ID,DEPARTMENT_ID,SALARY,min(SALARY)
+from employees;--error
+
+select * from
+(SELECT EMPLOYEE_ID,FIRST_NAME,JOB_ID,DEPARTMENT_ID,SALARY,
+DENSE_RANK() OVER(ORDER BY SALARY) as DENSRANK 
+FROM employees) A WHERE DENSRANK=1;
+
+SELECT EMPLOYEE_ID,FIRST_NAME,JOB_ID,DEPARTMENT_ID,SALARY,
+DENSE_RANK() OVER(ORDER BY SALARY) as DENSRANK 
+FROM employees;
+
+SELECT * FROM A;--error
+
+--1 sub query
+--2 A  EMPLOYEE_ID,FIRST_NAME,JOB_ID,DEPARTMENT_ID,SALARY,DENSRANK
+--3 where condition
+
+--(1)
+select * from
+(SELECT EMPLOYEE_ID,FIRST_NAME,JOB_ID,DEPARTMENT_ID,SALARY,
+DENSE_RANK() OVER(ORDER BY SALARY) as DENSRANK 
+FROM employees) A WHERE DENSRANK=1;
+
+--(2)
+WITH ENOCK as
+(SELECT EMPLOYEE_ID,FIRST_NAME,JOB_ID,DEPARTMENT_ID,SALARY,
+DENSE_RANK() OVER(ORDER BY SALARY) as DENSRANK
+FROM employees)
+SELECT * FROM ENOCK WHERE DENSRANK=1;
+
+--HIHEST SALARY
+WITH ENOCK as
+(SELECT EMPLOYEE_ID,FIRST_NAME,JOB_ID,DEPARTMENT_ID,SALARY,
+DENSE_RANK() OVER(ORDER BY SALARY) as DENSRANK
+FROM employees)
+SELECT * FROM ENOCK WHERE DENSRANK=2 and ROWNUM<2;
+
+--rank it provide non sequential rank
+
+SELECT EMPLOYEE_ID,FIRST_NAME,JOB_ID,DEPARTMENT_ID,SALARY,
+RANK() OVER(ORDER BY SALARY) as RANK
+FROM employees;
+
+--row_number it assign number to each record
+
+SELECT EMPLOYEE_ID,FIRST_NAME,JOB_ID,DEPARTMENT_ID,SALARY,
+ROW_NUMBER() OVER(ORDER BY SALARY) as RNUMBER
+FROM employees;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
